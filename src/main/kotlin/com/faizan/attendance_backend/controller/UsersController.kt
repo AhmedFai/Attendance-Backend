@@ -1,8 +1,12 @@
 package com.faizan.attendance_backend.controller
 
+import com.faizan.attendance_backend.common.MyComponent
+import com.faizan.attendance_backend.service.UserService
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -10,33 +14,47 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/users")
-class UsersController {
+class UsersController(
+    private val userService: UserService
+) {
 
     @GetMapping
-    fun getUsers(
-        @RequestParam page: Int,
-        @RequestParam size: Int
-    ): String {
-        return "Page = $page , size = $size"
+    fun getUsers(): List<User> {
+        return userService.getUsers()
     }
 
     @PostMapping
     fun createUser(
         @RequestBody user: User
-    ): String {
-        return "Welcome ${user.name}"
+    ) {
+        userService.createUser(user)
     }
 
     @GetMapping("/{id}")
-    fun getUser(@PathVariable id: Double) : String {
-        return "User id is $id"
+    fun getUserById(@PathVariable id: Int): User? {
+        return userService.getUserById(id)
     }
 
-    @GetMapping("/search")
-    fun searchUser(
-        @RequestParam name: String
-    ): String {
-        return "Searching $name"
+    @GetMapping("/email")
+    fun emailExist(
+        @RequestParam email: String
+    ): Boolean {
+        return userService.emailExist(email)
+    }
+
+    @DeleteMapping("/{id}")
+    fun deleteUser(
+        @PathVariable id: Int
+    ): Boolean {
+        return userService.deleteUser(id)
+    }
+
+    @PutMapping("/{id}")
+    fun updateUser(
+        @PathVariable id: Int,
+        @RequestBody user: User
+    ): Boolean {
+        return userService.updateUser(id, user)
     }
 
 }
