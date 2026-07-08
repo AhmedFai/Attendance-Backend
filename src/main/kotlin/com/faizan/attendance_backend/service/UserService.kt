@@ -1,6 +1,7 @@
 package com.faizan.attendance_backend.service
 
 import com.faizan.attendance_backend.controller.User
+import com.faizan.attendance_backend.exception.UserNotFoundException
 import com.faizan.attendance_backend.repository.UserRepository
 import org.springframework.stereotype.Service
 
@@ -17,8 +18,8 @@ class UserService(
         userRepository.createUsers(user)
     }
 
-    fun getUserById(id: Int): User? {
-        return userRepository.getUserById(id)
+    fun getUserById(id: Int): User {
+        return userRepository.getUserById(id) ?: throw UserNotFoundException("User with id $id not found")
     }
 
     fun emailExist(email : String): Boolean {

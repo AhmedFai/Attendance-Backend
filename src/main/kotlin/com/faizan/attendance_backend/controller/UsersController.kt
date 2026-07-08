@@ -1,7 +1,11 @@
 package com.faizan.attendance_backend.controller
 
 import com.faizan.attendance_backend.common.MyComponent
+import com.faizan.attendance_backend.dto.SuccessResponse
 import com.faizan.attendance_backend.service.UserService
+import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -25,14 +29,29 @@ class UsersController(
 
     @PostMapping
     fun createUser(
+        @Valid
         @RequestBody user: User
-    ) {
+    ): ResponseEntity<SuccessResponse<User>> {
         userService.createUser(user)
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            SuccessResponse(
+                message = "User created successfully",
+                data = user
+            )
+        )
     }
 
     @GetMapping("/{id}")
-    fun getUserById(@PathVariable id: Int): User? {
-        return userService.getUserById(id)
+    fun getUserById(
+        @PathVariable id: Int
+    ): ResponseEntity<SuccessResponse<User>> {
+        val user = userService.getUserById(id)
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "User fetched successfully",
+                data = user
+            )
+        )
     }
 
     @GetMapping("/email")
