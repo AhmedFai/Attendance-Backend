@@ -2,7 +2,6 @@ package com.faizan.attendance_backend.service
 
 import com.faizan.attendance_backend.entity.User
 import com.faizan.attendance_backend.exception.UserNotFoundException
-import com.faizan.attendance_backend.repository.UserFakeRepository
 import com.faizan.attendance_backend.repository.UserRepository
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
