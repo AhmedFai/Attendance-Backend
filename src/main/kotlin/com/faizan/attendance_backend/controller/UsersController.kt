@@ -2,6 +2,7 @@ package com.faizan.attendance_backend.controller
 
 import com.faizan.attendance_backend.common.MyComponent
 import com.faizan.attendance_backend.dto.SuccessResponse
+import com.faizan.attendance_backend.entity.User
 import com.faizan.attendance_backend.service.UserService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -32,11 +33,11 @@ class UsersController(
         @Valid
         @RequestBody user: User
     ): ResponseEntity<SuccessResponse<User>> {
-        userService.createUser(user)
+        val savedUser = userService.createUser(user)
         return ResponseEntity.status(HttpStatus.CREATED).body(
             SuccessResponse(
                 message = "User created successfully",
-                data = user
+                data = savedUser
             )
         )
     }
@@ -54,26 +55,39 @@ class UsersController(
         )
     }
 
-    @GetMapping("/email")
-    fun emailExist(
-        @RequestParam email: String
-    ): Boolean {
-        return userService.emailExist(email)
-    }
+//    @GetMapping("/email")
+//    fun emailExist(
+//        @RequestParam email: String
+//    ): Boolean {
+//        return userService.emailExist(email)
+//    }
 
     @DeleteMapping("/{id}")
     fun deleteUser(
         @PathVariable id: Int
-    ): Boolean {
-        return userService.deleteUser(id)
+    ): ResponseEntity<SuccessResponse<Nothing?>> {
+        userService.deleteUser(id)
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "User deleted successfully",
+                data = null
+            )
+        )
     }
 
     @PutMapping("/{id}")
     fun updateUser(
         @PathVariable id: Int,
+        @Valid
         @RequestBody user: User
-    ): Boolean {
-        return userService.updateUser(id, user)
+    ): ResponseEntity<SuccessResponse<User>> {
+        val updatedUser = userService.updateUser(id, user)
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "User updated successfully",
+                data = updatedUser
+            )
+        )
     }
 
 }
