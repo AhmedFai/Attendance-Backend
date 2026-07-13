@@ -55,12 +55,126 @@ class UsersController(
         )
     }
 
+    @GetMapping("/email")
+    fun emailExist(
+        @RequestParam email: String
+    ): Boolean {
+        return userService.emailExist(email)
+    }
+
 //    @GetMapping("/email")
-//    fun emailExist(
+//    fun findByEmail(
 //        @RequestParam email: String
-//    ): Boolean {
-//        return userService.emailExist(email)
+//    ): ResponseEntity<SuccessResponse<User>> {
+//        val user = userService.findByEmail(email)
+//        return ResponseEntity.ok(
+//            SuccessResponse(
+//                message = "User fetched successfully.",
+//                data = user
+//            )
+//        )
 //    }
+
+    @GetMapping("/age")
+    fun findByAgeGreaterThan(
+        @RequestParam age: Int
+    ): ResponseEntity<SuccessResponse<List<User>>> {
+        val users = userService.findByAgeGreaterThan(age)
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "Users are as follows:",
+                data = users
+            )
+        )
+    }
+
+    @GetMapping("/ageBetween")
+    fun findByAgeBetween(
+        @RequestParam startAge : Int,
+        @RequestParam endAge : Int
+    ): ResponseEntity<SuccessResponse<List<User>>> {
+        val users = userService.findByAgeBetween(startAge, endAge)
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "Filtered users",
+                data = users
+            )
+        )
+    }
+
+    @GetMapping("/search")
+    fun findByNameContaining(
+        @RequestParam name: String
+    ): ResponseEntity<SuccessResponse<List<User>>> {
+        val users = userService.findByNameContaining(name)
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "Here are the search users",
+                data = users
+            )
+        )
+    }
+
+    @GetMapping("/ageOlder")
+    fun findUsersOlderThan(
+        @RequestParam age: Int
+    ): ResponseEntity<SuccessResponse<List<User>>> {
+        val user  = userService.findUsersOlderThan(age)
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "Older users",
+                data = user
+            )
+        )
+    }
+
+    @GetMapping("/search-custom")
+    fun searchUsers(
+        @RequestParam age: Int,
+        @RequestParam name: String
+    ): ResponseEntity<SuccessResponse<List<User>>> {
+        val users = userService.searchUsers(age, name)
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "Custom search users",
+                data = users
+            )
+        )
+    }
+
+    @GetMapping("/get-older")
+    fun findUsersOlderThanNative(
+        @RequestParam age: Int
+    ): ResponseEntity<SuccessResponse<List<User>>> {
+        val users = userService.findUsersOlderThanNative(age)
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "Older people",
+                data = users
+            )
+        )
+    }
+
+    @PutMapping("/update-name")
+    fun updateUserName(
+        @RequestParam id: Int,
+        @RequestParam name: String
+    ): ResponseEntity<SuccessResponse<User>> {
+        val user = userService.updateUserName(id, name)
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "User updated successfully",
+                data = user
+            )
+        )
+    }
+
+    @DeleteMapping("/delete-user")
+    fun deletingUser(
+       @RequestParam id: Int
+    ): Int {
+        return userService.deletingUser(id)
+    }
 
     @DeleteMapping("/{id}")
     fun deleteUser(

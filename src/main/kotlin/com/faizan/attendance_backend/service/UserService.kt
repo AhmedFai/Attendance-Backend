@@ -23,9 +23,58 @@ class UserService(
         return userRepository.findById(id).orElseThrow { UserNotFoundException("User with id $id not found") }
     }
 
-//    fun emailExist(email : String): Boolean {
-//        return userRepository.isEmailExist(email)
-//    }
+    fun emailExist(email : String): Boolean {
+        return userRepository.existsByEmail(email)
+    }
+
+    fun findByEmail(email: String): User {
+        return userRepository.findByEmail(email) ?: throw  UserNotFoundException("User with email $email not found")
+    }
+
+    fun findByAgeGreaterThan(age: Int): List<User> {
+        return userRepository.findByAgeGreaterThan(age)
+    }
+
+    fun findByAgeBetween(startAge: Int, endAge: Int): List<User> {
+        return userRepository.findByAgeBetween(startAge, endAge);
+    }
+
+    fun findByNameContaining(name: String): List<User> {
+        return userRepository.findByNameContaining(name)
+    }
+
+    fun findUsersOlderThan(age: Int): List<User> {
+        return userRepository.findUsersOlderThan(age)
+    }
+
+    fun searchUsers(age: Int, name: String): List<User> {
+        return userRepository.searchUsers(age, name)
+    }
+
+    fun findUsersOlderThanNative(age: Int): List<User> {
+        return userRepository.findUsersOlderThanNative(age)
+    }
+
+    fun updateUserName(
+        id: Int,
+        name: String
+    ): User {
+        val updatedRows = userRepository.updateUserName(id, name)
+        if (updatedRows == 0){
+            throw UserNotFoundException("User with id $id not found")
+        }
+        return userRepository.findById(id).orElseThrow {
+            UserNotFoundException("User with id $id not found")
+        }
+    }
+
+    fun deletingUser(id: Int): Int {
+        val updatedRows = userRepository.deletingUser(id)
+        if (updatedRows == 0){
+            throw UserNotFoundException("User with id $id not found")
+        }
+        return userRepository.deletingUser(id)
+    }
 
     fun deleteUser(id: Int) {
         if (!userRepository.existsById(id)){
