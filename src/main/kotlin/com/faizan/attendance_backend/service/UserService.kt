@@ -1,7 +1,12 @@
 package com.faizan.attendance_backend.service
 
+import com.faizan.attendance_backend.dto.CreateUserRequest
+import com.faizan.attendance_backend.dto.UpdateUserRequest
+import com.faizan.attendance_backend.dto.UserResponse
 import com.faizan.attendance_backend.entity.User
 import com.faizan.attendance_backend.exception.UserNotFoundException
+import com.faizan.attendance_backend.mapper.toEntity
+import com.faizan.attendance_backend.mapper.toResponse
 import com.faizan.attendance_backend.repository.UserRepository
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -11,24 +16,29 @@ class UserService(
     private val userRepository: UserRepository
 ) {
 
-    fun getUsers(): List<User> {
-        return userRepository.findAll(Sort.by("id"))
+    fun getUsers(): List<UserResponse> {
+        val users = userRepository.findAll(Sort.by("id"))
+        return users.map { user -> user.toResponse() }
     }
 
-    fun createUser(user: User): User {
-        return userRepository.save(user)
+    fun createUser(request: CreateUserRequest): UserResponse {
+        val user = request.toEntity()
+        val savedUser = userRepository.save(user)
+        return savedUser.toResponse()
     }
 
-    fun getUserById(id: Int): User {
-        return userRepository.findById(id).orElseThrow { UserNotFoundException("User with id $id not found") }
+    fun getUserById(id: Int): UserResponse {
+        val user = userRepository.findById(id).orElseThrow { UserNotFoundException("User with id $id not found") }
+        return user.toResponse()
     }
 
     fun emailExist(email : String): Boolean {
         return userRepository.existsByEmail(email)
     }
 
-    fun findByEmail(email: String): User {
-        return userRepository.findByEmail(email) ?: throw  UserNotFoundException("User with email $email not found")
+    fun findByEmail(email: String): UserResponse {
+        val user = userRepository.findByEmail(email) ?: throw  UserNotFoundException("User with email $email not found")
+        return user.toResponse()
     }
 
     fun findByAgeGreaterThan(age: Int): List<User> {
@@ -85,18 +95,18 @@ class UserService(
 
     fun updateUser(
         id: Int,
-        user: User
-    ): User {
+        request: UpdateUserRequest
+    ): UserResponse {
         val existingUser = userRepository.findById(id)
             .orElseThrow {
                 UserNotFoundException("User with id $id not found")
             }
         val updatedUser = existingUser.copy(
-            name = user.name,
-            email = user.email,
-            age = user.age
+            name = request.name,
+            age = request.age
         )
-        return userRepository.save(updatedUser)
+        val savedUser = userRepository.save(updatedUser)
+        return savedUser.toResponse()
     }
 
 }

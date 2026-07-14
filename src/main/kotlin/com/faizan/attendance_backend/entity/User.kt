@@ -17,13 +17,10 @@ data class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int? = null,
 
-    @field:NotBlank(message = "Name cannot be empty")
     val name: String = "",
 
-    @field:Email(message = "Invalid Email")
     val email: String = "",
 
-    @field:Min(value = 18, message = "Age must be at least 18")
     val age: Int = 18
 
 )

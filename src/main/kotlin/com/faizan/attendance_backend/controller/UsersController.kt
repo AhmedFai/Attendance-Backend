@@ -1,8 +1,11 @@
 package com.faizan.attendance_backend.controller
 
-import com.faizan.attendance_backend.common.MyComponent
+import com.faizan.attendance_backend.dto.CreateUserRequest
 import com.faizan.attendance_backend.dto.SuccessResponse
+import com.faizan.attendance_backend.dto.UpdateUserRequest
+import com.faizan.attendance_backend.dto.UserResponse
 import com.faizan.attendance_backend.entity.User
+import com.faizan.attendance_backend.mapper.toEntity
 import com.faizan.attendance_backend.service.UserService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -24,16 +27,22 @@ class UsersController(
 ) {
 
     @GetMapping
-    fun getUsers(): List<User> {
-        return userService.getUsers()
+    fun getUsers(): ResponseEntity<SuccessResponse<List<UserResponse>>> {
+        val users = userService.getUsers()
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "User fetched successfully",
+                data = users
+            )
+        )
     }
 
     @PostMapping
     fun createUser(
         @Valid
-        @RequestBody user: User
-    ): ResponseEntity<SuccessResponse<User>> {
-        val savedUser = userService.createUser(user)
+        @RequestBody request: CreateUserRequest
+    ): ResponseEntity<SuccessResponse<UserResponse>> {
+        val savedUser = userService.createUser(request)
         return ResponseEntity.status(HttpStatus.CREATED).body(
             SuccessResponse(
                 message = "User created successfully",
@@ -45,7 +54,7 @@ class UsersController(
     @GetMapping("/{id}")
     fun getUserById(
         @PathVariable id: Int
-    ): ResponseEntity<SuccessResponse<User>> {
+    ): ResponseEntity<SuccessResponse<UserResponse>> {
         val user = userService.getUserById(id)
         return ResponseEntity.ok(
             SuccessResponse(
@@ -55,25 +64,25 @@ class UsersController(
         )
     }
 
-    @GetMapping("/email")
-    fun emailExist(
-        @RequestParam email: String
-    ): Boolean {
-        return userService.emailExist(email)
-    }
-
 //    @GetMapping("/email")
-//    fun findByEmail(
+//    fun emailExist(
 //        @RequestParam email: String
-//    ): ResponseEntity<SuccessResponse<User>> {
-//        val user = userService.findByEmail(email)
-//        return ResponseEntity.ok(
-//            SuccessResponse(
-//                message = "User fetched successfully.",
-//                data = user
-//            )
-//        )
+//    ): Boolean {
+//        return userService.emailExist(email)
 //    }
+
+    @GetMapping("/email")
+    fun findByEmail(
+        @RequestParam email: String
+    ): ResponseEntity<SuccessResponse<UserResponse>> {
+        val user = userService.findByEmail(email)
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "User fetched successfully.",
+                data = user
+            )
+        )
+    }
 
     @GetMapping("/age")
     fun findByAgeGreaterThan(
@@ -193,9 +202,9 @@ class UsersController(
     fun updateUser(
         @PathVariable id: Int,
         @Valid
-        @RequestBody user: User
-    ): ResponseEntity<SuccessResponse<User>> {
-        val updatedUser = userService.updateUser(id, user)
+        @RequestBody userRequest: UpdateUserRequest
+    ): ResponseEntity<SuccessResponse<UserResponse>> {
+        val updatedUser = userService.updateUser(id, userRequest)
         return ResponseEntity.ok(
             SuccessResponse(
                 message = "User updated successfully",
