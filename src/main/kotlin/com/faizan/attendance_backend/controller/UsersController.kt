@@ -81,6 +81,22 @@ class UsersController(
         )
     }
 
+    @PostMapping("/register")
+    fun registerUser(
+        @Valid
+        @RequestBody request: CreateUserRequest
+    ): ResponseEntity<SuccessResponse<UserResponse>> {
+
+        val user = userService.registerUser(request)
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            SuccessResponse(
+                message = "User registered successfully",
+                data = user
+            )
+        )
+    }
+
     @GetMapping("/{id}")
     fun getUserById(
         @PathVariable id: Int

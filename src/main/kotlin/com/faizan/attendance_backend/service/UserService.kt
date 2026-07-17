@@ -13,10 +13,13 @@ import com.faizan.attendance_backend.mapper.toResponse
 import com.faizan.attendance_backend.repository.UserRepository
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserService(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val userProfileService: UserProfileService,
+    private val projectService: ProjectService
 ) {
 
     fun getUsers(): List<UserResponse> {
@@ -40,6 +43,21 @@ class UserService(
     fun createUser(request: CreateUserRequest): UserResponse {
         val user = request.toEntity()
         val savedUser = userRepository.save(user)
+        return savedUser.toResponse()
+    }
+
+    @Transactional
+    fun registerUser(
+        request: CreateUserRequest
+    ): UserResponse {
+        val user = request.toEntity()
+
+        val savedUser = userRepository.save(user)
+
+        userProfileService.createProfile(savedUser)
+
+        projectService.assignDefaultProject(savedUser)
+
         return savedUser.toResponse()
     }
 
