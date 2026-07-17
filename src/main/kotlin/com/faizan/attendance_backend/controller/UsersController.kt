@@ -3,6 +3,8 @@ package com.faizan.attendance_backend.controller
 import com.faizan.attendance_backend.dto.CreateUserRequest
 import com.faizan.attendance_backend.dto.SuccessResponse
 import com.faizan.attendance_backend.dto.UpdateUserRequest
+import com.faizan.attendance_backend.dto.UserDetailsResponse
+import com.faizan.attendance_backend.dto.UserProfileResponse
 import com.faizan.attendance_backend.dto.UserResponse
 import com.faizan.attendance_backend.entity.User
 import com.faizan.attendance_backend.mapper.toEntity
@@ -33,6 +35,34 @@ class UsersController(
             SuccessResponse(
                 message = "User fetched successfully",
                 data = users
+            )
+        )
+    }
+
+    @GetMapping("/{id}/details")
+    fun getUserDetails(
+        @PathVariable id: Int
+    ): ResponseEntity<SuccessResponse<UserDetailsResponse>> {
+        val details = userService.getUserDetails(id)
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "Details are as follows",
+                data = details
+            )
+        )
+    }
+
+    @GetMapping("/{id}/profile")
+    fun getUserProfile(
+        @PathVariable id: Int
+    ): ResponseEntity<SuccessResponse<UserProfileResponse>> {
+
+        val profile = userService.getUserProfile(id)
+
+        return ResponseEntity.ok(
+            SuccessResponse(
+                message = "Profile fetched successfully",
+                data = profile
             )
         )
     }

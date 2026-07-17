@@ -2,9 +2,12 @@ package com.faizan.attendance_backend.service
 
 import com.faizan.attendance_backend.dto.CreateUserRequest
 import com.faizan.attendance_backend.dto.UpdateUserRequest
+import com.faizan.attendance_backend.dto.UserDetailsResponse
+import com.faizan.attendance_backend.dto.UserProfileResponse
 import com.faizan.attendance_backend.dto.UserResponse
 import com.faizan.attendance_backend.entity.User
 import com.faizan.attendance_backend.exception.UserNotFoundException
+import com.faizan.attendance_backend.mapper.toDetailsResponse
 import com.faizan.attendance_backend.mapper.toEntity
 import com.faizan.attendance_backend.mapper.toResponse
 import com.faizan.attendance_backend.repository.UserRepository
@@ -19,6 +22,19 @@ class UserService(
     fun getUsers(): List<UserResponse> {
         val users = userRepository.findAll(Sort.by("id"))
         return users.map { user -> user.toResponse() }
+    }
+
+    fun getUserDetails(id: Int): UserDetailsResponse {
+        val user = userRepository.findById(id).orElseThrow {
+            UserNotFoundException("User with id $id not found")
+        }
+        return user.toDetailsResponse()
+    }
+
+    fun getUserProfile(id: Int): UserProfileResponse {
+        val user = userRepository.findById(id).orElseThrow { UserNotFoundException("User with id $id not found") }
+        val profile = user.profile ?: throw UserNotFoundException("Profile not found")
+        return profile.toResponse()
     }
 
     fun createUser(request: CreateUserRequest): UserResponse {

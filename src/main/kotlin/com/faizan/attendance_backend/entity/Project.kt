@@ -5,11 +5,11 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
-import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
+
 @Entity
-@Table(name = "users")
-data class User(
+@Table(name = "projects")
+data class Project(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,17 +17,9 @@ data class User(
 
     val name: String = "",
 
-    val email: String = "",
+    val description: String = "",
 
-    val age: Int = 18,
-
-    @OneToMany(mappedBy = "user")
-    val attendance: List<Attendance> = emptyList(),
-
-    @OneToOne(mappedBy = "user")
-    val profile: UserProfile? = null,
-
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "project")
     val userProjects: List<UserProject> = emptyList()
 
 )
