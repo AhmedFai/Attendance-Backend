@@ -1,6 +1,7 @@
 package com.faizan.attendance_backend.service
 
 import com.faizan.attendance_backend.dto.CreateUserRequest
+import com.faizan.attendance_backend.dto.PaginatedResponse
 import com.faizan.attendance_backend.dto.UpdateUserRequest
 import com.faizan.attendance_backend.dto.UserDetailsResponse
 import com.faizan.attendance_backend.dto.UserProfileResponse
@@ -11,6 +12,8 @@ import com.faizan.attendance_backend.mapper.toDetailsResponse
 import com.faizan.attendance_backend.mapper.toEntity
 import com.faizan.attendance_backend.mapper.toResponse
 import com.faizan.attendance_backend.repository.UserRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -22,9 +25,31 @@ class UserService(
     private val projectService: ProjectService
 ) {
 
-    fun getUsers(): List<UserResponse> {
-        val users = userRepository.findAll(Sort.by("id"))
-        return users.map { user -> user.toResponse() }
+    fun getUsers(
+        page: Int,
+        size: Int
+    ): PaginatedResponse<UserResponse> {
+
+        val pageable = PageRequest.of(
+            page,
+            size,
+            Sort.by("id")
+        )
+
+        val users = userRepository.findAll(pageable)
+
+        return PaginatedResponse(
+            message = "Users fetched successfully",
+            data = users.content.map { user ->
+                user.toResponse()
+            },
+            page = users.number,
+            size = users.size,
+            totalElements = users.totalElements,
+            totalPages = users.totalPages,
+            first = users.isFirst,
+            last = users.isLast
+        )
     }
 
     fun getUserDetails(id: Int): UserDetailsResponse {

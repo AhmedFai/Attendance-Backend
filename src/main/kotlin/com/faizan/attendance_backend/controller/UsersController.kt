@@ -1,17 +1,19 @@
 package com.faizan.attendance_backend.controller
 
 import com.faizan.attendance_backend.dto.CreateUserRequest
+import com.faizan.attendance_backend.dto.PaginatedResponse
 import com.faizan.attendance_backend.dto.SuccessResponse
 import com.faizan.attendance_backend.dto.UpdateUserRequest
 import com.faizan.attendance_backend.dto.UserDetailsResponse
 import com.faizan.attendance_backend.dto.UserProfileResponse
 import com.faizan.attendance_backend.dto.UserResponse
 import com.faizan.attendance_backend.entity.User
-import com.faizan.attendance_backend.mapper.toEntity
 import com.faizan.attendance_backend.service.UserService
 import jakarta.validation.Valid
+import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.ResponseEntity.*
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -29,14 +31,14 @@ class UsersController(
 ) {
 
     @GetMapping
-    fun getUsers(): ResponseEntity<SuccessResponse<List<UserResponse>>> {
-        val users = userService.getUsers()
-        return ResponseEntity.ok(
-            SuccessResponse(
-                message = "User fetched successfully",
-                data = users
-            )
-        )
+    fun getUsers(
+        @RequestParam page: Int,
+        @RequestParam size: Int
+    ): ResponseEntity<PaginatedResponse<UserResponse>> {
+
+        val users = userService.getUsers(page, size)
+
+        return ResponseEntity.ok(users)
     }
 
     @GetMapping("/{id}/details")
@@ -44,7 +46,7 @@ class UsersController(
         @PathVariable id: Int
     ): ResponseEntity<SuccessResponse<UserDetailsResponse>> {
         val details = userService.getUserDetails(id)
-        return ResponseEntity.ok(
+        return ok(
             SuccessResponse(
                 message = "Details are as follows",
                 data = details
@@ -59,7 +61,7 @@ class UsersController(
 
         val profile = userService.getUserProfile(id)
 
-        return ResponseEntity.ok(
+        return ok(
             SuccessResponse(
                 message = "Profile fetched successfully",
                 data = profile
@@ -73,7 +75,7 @@ class UsersController(
         @RequestBody request: CreateUserRequest
     ): ResponseEntity<SuccessResponse<UserResponse>> {
         val savedUser = userService.createUser(request)
-        return ResponseEntity.status(HttpStatus.CREATED).body(
+        return status(HttpStatus.CREATED).body(
             SuccessResponse(
                 message = "User created successfully",
                 data = savedUser
@@ -89,7 +91,7 @@ class UsersController(
 
         val user = userService.registerUser(request)
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(
+        return status(HttpStatus.CREATED).body(
             SuccessResponse(
                 message = "User registered successfully",
                 data = user
@@ -102,7 +104,7 @@ class UsersController(
         @PathVariable id: Int
     ): ResponseEntity<SuccessResponse<UserResponse>> {
         val user = userService.getUserById(id)
-        return ResponseEntity.ok(
+        return ok(
             SuccessResponse(
                 message = "User fetched successfully",
                 data = user
@@ -122,7 +124,7 @@ class UsersController(
         @RequestParam email: String
     ): ResponseEntity<SuccessResponse<UserResponse>> {
         val user = userService.findByEmail(email)
-        return ResponseEntity.ok(
+        return ok(
             SuccessResponse(
                 message = "User fetched successfully.",
                 data = user
@@ -135,7 +137,7 @@ class UsersController(
         @RequestParam age: Int
     ): ResponseEntity<SuccessResponse<List<User>>> {
         val users = userService.findByAgeGreaterThan(age)
-        return ResponseEntity.ok(
+        return ok(
             SuccessResponse(
                 message = "Users are as follows:",
                 data = users
@@ -149,7 +151,7 @@ class UsersController(
         @RequestParam endAge : Int
     ): ResponseEntity<SuccessResponse<List<User>>> {
         val users = userService.findByAgeBetween(startAge, endAge)
-        return ResponseEntity.ok(
+        return ok(
             SuccessResponse(
                 message = "Filtered users",
                 data = users
@@ -162,7 +164,7 @@ class UsersController(
         @RequestParam name: String
     ): ResponseEntity<SuccessResponse<List<User>>> {
         val users = userService.findByNameContaining(name)
-        return ResponseEntity.ok(
+        return ok(
             SuccessResponse(
                 message = "Here are the search users",
                 data = users
@@ -175,7 +177,7 @@ class UsersController(
         @RequestParam age: Int
     ): ResponseEntity<SuccessResponse<List<User>>> {
         val user  = userService.findUsersOlderThan(age)
-        return ResponseEntity.ok(
+        return ok(
             SuccessResponse(
                 message = "Older users",
                 data = user
@@ -189,7 +191,7 @@ class UsersController(
         @RequestParam name: String
     ): ResponseEntity<SuccessResponse<List<User>>> {
         val users = userService.searchUsers(age, name)
-        return ResponseEntity.ok(
+        return ok(
             SuccessResponse(
                 message = "Custom search users",
                 data = users
@@ -202,7 +204,7 @@ class UsersController(
         @RequestParam age: Int
     ): ResponseEntity<SuccessResponse<List<User>>> {
         val users = userService.findUsersOlderThanNative(age)
-        return ResponseEntity.ok(
+        return ok(
             SuccessResponse(
                 message = "Older people",
                 data = users
@@ -216,7 +218,7 @@ class UsersController(
         @RequestParam name: String
     ): ResponseEntity<SuccessResponse<User>> {
         val user = userService.updateUserName(id, name)
-        return ResponseEntity.ok(
+        return ok(
             SuccessResponse(
                 message = "User updated successfully",
                 data = user
@@ -236,7 +238,7 @@ class UsersController(
         @PathVariable id: Int
     ): ResponseEntity<SuccessResponse<Nothing?>> {
         userService.deleteUser(id)
-        return ResponseEntity.ok(
+        return ok(
             SuccessResponse(
                 message = "User deleted successfully",
                 data = null
@@ -251,7 +253,7 @@ class UsersController(
         @RequestBody userRequest: UpdateUserRequest
     ): ResponseEntity<SuccessResponse<UserResponse>> {
         val updatedUser = userService.updateUser(id, userRequest)
-        return ResponseEntity.ok(
+        return ok(
             SuccessResponse(
                 message = "User updated successfully",
                 data = updatedUser
